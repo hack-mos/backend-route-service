@@ -1,0 +1,188 @@
+---
+openapi: 3.1.0
+components:
+  schemas:
+    OrderRequestDto:
+      type: object
+      required:
+        - fromDock
+        - toDock
+      properties:
+        toDock:
+          type: integer
+          exclusiveMinimum: 0
+          format: int32
+        fromDock:
+          type: integer
+          exclusiveMinimum: 0
+          format: int32
+        predictedMinutes:
+          type: number
+          format: double
+        amountOfUsers:
+          type: integer
+          exclusiveMinimum: 0
+          format: int32
+        taxiId:
+          type: integer
+          format: int64
+        toBerthPosition:
+          type: string
+        fromBerthPosition:
+          type: string
+  securitySchemes:
+    SecurityScheme:
+      type: openIdConnect
+      openIdConnectUrl: http://host.docker.internal:8543/realms/master/.well-known/openid-configuration
+      description: Authentication
+paths:
+  /api/v1/orders:
+    get:
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderRequestDto"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get All Orders
+      tags:
+        - Order Resource
+      security:
+        - SecurityScheme:
+            - HACK_ADMIN
+            - HACK_CLIENT
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderRequestDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderRequestDto"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Create Order
+      tags:
+        - Order Resource
+      security:
+        - SecurityScheme:
+            - HACK_ADMIN
+            - HACK_CLIENT
+  /api/v1/orders/{id}:
+    put:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderRequestDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderRequestDto"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Update Order By Id
+      tags:
+        - Order Resource
+      security:
+        - SecurityScheme:
+            - HACK_ADMIN
+            - HACK_CLIENT
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderRequestDto"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Order By Id
+      tags:
+        - Order Resource
+      security:
+        - SecurityScheme:
+            - HACK_ADMIN
+            - HACK_CLIENT
+    delete:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: boolean
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Delete Order By Id
+      tags:
+        - Order Resource
+      security:
+        - SecurityScheme:
+            - HACK_ADMIN
+            - HACK_CLIENT
+info:
+  title: route-service API
+  version: 1.0-SNAPSHOT
