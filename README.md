@@ -18,6 +18,12 @@
 - Доступ к Keycloak можно получить по `http://localhost:8543/admin/master/console/`
 
 **Примечания:**
+
+**OpenAPI**:
+
+- [Route Service OpenAPI](https://github.com/hack-mos/backend-route-service/blob/master/src/main/resources/route-service-openapi.yaml)
+- [Location Service OpenAPI](https://github.com/hack-mos/backend-location-service/blob/master/src/main/resources/location-service-openapi.yaml)
+
 В Keycloak заведены три пользователя (далее - логин/пароль):
 
 1. boss/boss (права Администратора)
@@ -57,8 +63,8 @@ B:**
 WITH dock_pairs AS (SELECT d1.id AS from_dock,
                            d2.id AS to_dock
                     FROM public.places d1
-                             JOIN public.places d2
-                                  ON d1.id <> d2.id),
+                           JOIN public.places d2
+                                ON d1.id <> d2.id),
      usage_stats AS (SELECT s.dock_id AS dock_id,
                             s.berth_position,
                             COUNT(*)  AS usage_count -- считаем наименее загруженные пришвартовочные места
@@ -73,19 +79,19 @@ WITH dock_pairs AS (SELECT d1.id AS from_dock,
                                                                      us_to.berth_position                                              AS to_berth_position,
                                                                      us_to.usage_count                                                 AS to_usage_count
                        FROM dock_pairs dp
-                                JOIN public.schedules s1
-                                     ON s1.dock_id = dp.from_dock
-                                JOIN public.schedules s2
-                                     ON s2.dock_id = dp.to_dock
-                                         AND s1.ship_name =
-                                             s2.ship_name -- опираемся на данные по валидным кораблям из расписания
-                                         AND s2.departure >
-                                             s1.departure -- оставляем только те, которые плывут последовательно (A -> B -> C)
-                                         AND DATE(s1.start_date_utc) = DATE(s2.start_date_utc) -- в рамках одного дня
-                                LEFT JOIN usage_stats us_from
-                                          ON us_from.dock_id = dp.from_dock
-                                LEFT JOIN usage_stats us_to
-                                          ON us_to.dock_id = dp.to_dock
+                              JOIN public.schedules s1
+                                   ON s1.dock_id = dp.from_dock
+                              JOIN public.schedules s2
+                                   ON s2.dock_id = dp.to_dock
+                                     AND s1.ship_name =
+                                         s2.ship_name -- опираемся на данные по валидным кораблям из расписания
+                                     AND s2.departure >
+                                         s1.departure -- оставляем только те, которые плывут последовательно (A -> B -> C)
+                                     AND DATE(s1.start_date_utc) = DATE(s2.start_date_utc) -- в рамках одного дня
+                              LEFT JOIN usage_stats us_from
+                                        ON us_from.dock_id = dp.from_dock
+                              LEFT JOIN usage_stats us_to
+                                        ON us_to.dock_id = dp.to_dock
                        WHERE s1.ship_name IS NOT NULL
                        GROUP BY dp.from_dock, dp.to_dock, s1.ship_name, us_from.berth_position, us_from.usage_count,
                                 us_to.berth_position, us_to.usage_count)
