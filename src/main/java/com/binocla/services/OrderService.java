@@ -62,7 +62,6 @@ public class OrderService {
 
                     return uni.onItem().transformToUni(ignored -> {
                         if (amountOfUsersLeft.get() > 0) {
-                            // Pass amountOfUsersLeft to allocateNewTaxis
                             return allocateNewTaxis(fromDock, toDock, amountOfUsersLeft, createdOrders);
                         } else {
                             return Uni.createFrom().item(createdOrders);
@@ -73,7 +72,6 @@ public class OrderService {
 
     private Uni<List<OrderRequestDto>> allocateNewTaxis(Integer fromDock, Integer toDock, AtomicInteger amountOfUsersLeft, List<OrderRequestDto> createdOrders) {
         return locationClient.getAllTaxis(0, 100)
-                // Pass amountOfUsersLeft to allocateUsersToTaxis
                 .onItem().transformToUni(taxis -> allocateUsersToTaxis(taxis, amountOfUsersLeft, fromDock, toDock, createdOrders));
     }
 
