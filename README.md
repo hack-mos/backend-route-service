@@ -24,7 +24,8 @@
 - [Route Service OpenAPI](https://github.com/hack-mos/backend-route-service/blob/master/src/main/resources/route-service-openapi.yaml)
 - [Location Service OpenAPI](https://github.com/hack-mos/backend-location-service/blob/master/src/main/resources/location-service-openapi.yaml)
 
-В Keycloak заведены три пользователя (далее - логин/пароль):
+В Keycloak заведены три пользователя (далее - логин/пароль). Если хочется попасть в Keycloak UI - логин и пароль
+`admin`:
 
 1. boss/boss (права Администратора)
 2. client/client (права Клиента)
